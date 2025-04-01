@@ -34,8 +34,9 @@ model Department {
   title           String
   studentProfiles StudentProfile[]
   lecturerprofile LecturerProfile[]
-  Faculty         Faculty?          @relation(fields: [facultyId], references: [id])
-  facultyId       String?
+  Faculty         Faculty           @relation(fields: [facultyId], references: [id])
+  facultyId       String
+  courses         Course[]
 }
 
 model StudentProfile {
@@ -45,18 +46,62 @@ model StudentProfile {
   departmentId String?
   userId       String      @unique
   level        Int
+  grades       Grades[]
 }
 
 model LecturerProfile {
   id           String      @id @default(uuid())
   Department   Department? @relation(fields: [departmentId], references: [id])
   departmentId String?
-  User         User        @relation(fields: [userId], references: [id])
+  owner        User        @relation(fields: [userId], references: [id])
   userId       String      @unique
   exp          Int
+  courses      Course[]
+}
+
+model Course {
+  id           String            @id @default(uuid())
+  title        String
+  code         Int
+  description  String?
+  grades       Grades[]
+  Department   Department        @relation(fields: [departmentId], references: [id])
+  departmentId String
+  level        Int
+  lecturers    LecturerProfile[]
+}
+
+model Grades {
+  id               String @id @default(uuid())
+  studentProfileId String
+  courseId         String
+  value            Float
+  symbol           String
+
+  student StudentProfile @relation(fields: [studentProfileId], references: [id], onDelete: Cascade)
+  course  Course         @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([studentProfileId, courseId]) // Prevents duplicate entries
+  @@index([studentProfileId])
+  @@index([courseId])
+}
+
+model studyMaterials {
+  id          String                 @id @default(uuid())
+  title       String
+  category    StudyMaterialsCategory
+  price       Int
+  description String?
 }
 
 enum Role {
   STUDENT
   LECTURER
+}
+
+enum StudyMaterialsCategory {
+  BOOKS
+  RECORDINGS
+  courses
+  SESSIONS
 }
