@@ -1,48 +1,48 @@
 import { PrismaClient } from "@prisma/client";
-import dotenv from "dotenv";
-import Stripe from "stripe";
+import axios from "axios";
 
+import dotenv from "dotenv";
 dotenv.config();
 
 const prisma = new PrismaClient();
-const stripe = new Stripe(process.env.STRIPE_PRIVATE_KEY);
 
+// Paystack Initialize Payment API
 export const processPayment = async (req, res) => {
   try {
-    // Ensure all database queries complete before proceeding
-    const lineItems = await Promise.all(
-      req.body.items.map(async (item) => {
-        const dbItem = await prisma.studyMaterials.findFirst({
-          where: { id: item.id },
-        });
+    const { id, email } = req.body;
 
-        if (!dbItem) {
-          throw new Error(`Item with ID ${item.id} not found`);
-        }
-
-        return {
-          price_data: {
-            currency: "usd",
-            product_data: { name: dbItem.title },
-            unit_amount: dbItem.price, // Stripe uses cents
-          },
-          quantity: item.quantity,
-        };
-      })
-    );
-
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ["card"],
-      mode: "payment",
-      line_items: lineItems,
-      // success_url: `${process.env.FRONTEND_URL}/success.html`,
-      // cancel_url: `${process.env.FRONTEND_URL}/cancel.html`,
-      success_url: `${process.env.FRONTEND_URL_REACT}/success`,
-      cancel_url: `${process.env.FRONTEND_URL_REACT}/cancel`,
+    const dbItem = await prisma.studyMaterials.findFirst({
+      where: {
+        id: id,
+      },
     });
 
-    res.json({ url: session.url });
+    const paystackResponse = await axios.post(
+      "https://api.paystack.co/transaction/initialize",
+      {
+        email,
+        amount: dbItem.price, // Paystack uses kobo (1 NGN = 100 kobo)
+        currency: "NGN",
+        callback_url: `${process.env.FRONTEND_URL_REACT}/success`,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    res.json({
+      authorizationUrl: paystackResponse.data.data.authorization_url,
+    });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("Payment processing error:", error);
+
+    if (error.response) {
+      res.status(500).json({ message: error.response.data.message });
+    } else {
+      res.status(500).json({ message: "An unexpected error occurred" });
+    }
   }
 };

@@ -24,11 +24,13 @@ import {
 import Success from "./components/success";
 import Cancel from "./components/cancel";
 import CheckoutButton from "./components/check-out";
+import PayStackCheckout from "./components/paystackCheckout";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route>
       <Route path="/check-out" element={<CheckoutButton />} />
+      <Route path="/paystack-checkout" element={<PayStackCheckout />} />
       <Route path="/success" element={<Success />} />
       <Route path="/cancel" element={<Cancel />} />
     </Route>
