@@ -11,8 +11,11 @@ const PayButton = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          id: "603a2ac7-98e6-44c2-9d0b-c19645d33d26",
-          email: "customer@example.com",
+          email: "customer@mail.com",
+          items: [
+            { id: "603a2ac7-98e6-44c2-9d0b-c19645d33d26", quantity: 20 },
+            { id: "98b84015-52c0-4751-8878-eaef46e21541", quantity: 17 },
+          ],
         }),
       });
 

@@ -22,6 +22,7 @@ import {
   RouterProvider,
 } from "react-router-dom";
 import Success from "./components/success";
+import Home from "./components/home";
 import Cancel from "./components/cancel";
 import CheckoutButton from "./components/check-out";
 import PayStackCheckout from "./components/paystackCheckout";
@@ -29,6 +30,7 @@ import PayStackCheckout from "./components/paystackCheckout";
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route>
+      <Route path="/" element={<Home />} />
       <Route path="/check-out" element={<CheckoutButton />} />
       <Route path="/paystack-checkout" element={<PayStackCheckout />} />
       <Route path="/success" element={<Success />} />
