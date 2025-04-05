@@ -2,7 +2,10 @@ import { PDFDownloadLink } from "@react-pdf/renderer";
 import MyDocument from "./pdfDocument";
 
 interface TableRow {
-  [key: string]: string | number;
+  // [key: string]: string | number;
+  Item: string;
+  Price: string;
+  Quantity: number;
 }
 
 interface generatePdfProps {

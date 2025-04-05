@@ -1,12 +1,29 @@
-import React from "react";
+import { useState, useEffect } from "react";
 import GeneratePDF from "./generatePdf";
 
+interface TableRow {
+  item: string;
+  price: string;
+  quantity: number;
+}
+
 const home = () => {
-  const tableData = [
-    { Item: "Laptop", Price: "$1200", Quantity: 1 },
-    { Item: "Phone", Price: "$800", Quantity: 2 },
-    { Item: "Headphones", Price: "$200", Quantity: 3 },
-  ];
+  const [tableData, setTableData] = useState([]);
+
+  useEffect(() => {
+    getTabledata();
+  }, []);
+
+  const getTabledata = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/table-data");
+      const data = await response.json();
+      setTableData(data);
+    } catch (error) {
+      console.error("Failed to fetch table data:", error);
+    }
+  };
+
   return (
     <div>
       <h1>PDF Generator</h1>

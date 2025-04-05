@@ -6,9 +6,13 @@ import {
   StyleSheet,
   Image,
 } from "@react-pdf/renderer";
+import { totalItems } from "../utils.ts";
 
 interface TableRow {
-  [key: string]: string | number;
+  // [key: string]: string | number;
+  Item: string;
+  Price: string;
+  Quantity: number;
 }
 
 interface MyDocumentProps {
@@ -91,6 +95,10 @@ const pdfDocument = ({
           </View>
         </View>
       )}
+
+      <View style={styles.section}>
+        <Text>Total: {totalItems(tableData || [])}</Text>
+      </View>
     </Page>
   </Document>
 );
