@@ -18,9 +18,20 @@ model User {
   name            String
   email           String           @unique
   password        String
+  profileImage    String?
   role            Role
+  state           States?
+  gender          Gender?
+  age             Int?
+  yearAdmitted    Int?
   StudentProfile  StudentProfile?
   lecturerprofile LecturerProfile?
+
+  @@index([state])
+  @@index([gender])
+  @@index([role])
+  @@index([age])
+  @@index([yearAdmitted])
 }
 
 model Faculty {
@@ -104,4 +115,59 @@ enum StudyMaterialsCategory {
   RECORDINGS
   courses
   SESSIONS
+}
+
+enum States {
+  Alabama
+  Alaska
+  Arizona
+  Arkansas
+  California
+  Colorado
+  Connecticut
+  Delaware
+  Florida
+  Georgia
+  Hawaii
+  Idaho
+  IllinoisIndiana
+  Iowa
+  Kansas
+  Kentucky
+  Louisiana
+  Maine
+  Maryland
+  Massachusetts
+  Michigan
+  Minnesota
+  Mississippi
+  Missouri
+  MontanaNebraska
+  Nevada
+  New_Hampshire
+  New_Jersey
+  New_Mexico
+  New_York
+  North_Carolina
+  North_Dakota
+  Ohio
+  Oklahoma
+  Oregon
+  PennsylvaniaRhode_Island
+  South_Carolina
+  South_Dakota
+  Tennessee
+  Texas
+  Utah
+  Vermont
+  Virginia
+  Washington
+  West_Virginia
+  Wisconsin
+  Wyoming
+}
+
+enum Gender {
+  MALE
+  FEMALE
 }

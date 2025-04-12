@@ -1,3 +1,4 @@
+import cloudinary from "../utils/cloudinary.js";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
@@ -131,4 +132,29 @@ export const deleteUser = async (req, res) => {
   });
 
   res.status(200).json(user);
+};
+
+export const userImageUpload = async (req, res) => {
+  try {
+    const fileStr = `data:${
+      req.file.mimetype
+    };base64,${req.file.buffer.toString("base64")}`;
+
+    const uploadResponse = await cloudinary.uploader.upload(fileStr, {
+      folder: "user_profiles",
+    });
+
+    const updatedUser = await prisma.user.update({
+      where: { id: req.body.userId },
+      data: { profileImage: uploadResponse.secure_url },
+    });
+
+    res.json({
+      message: "Upload successful",
+      imageUrl: uploadResponse.secure_url,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Upload failed" });
+  }
 };

@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
+import axios from "axios";
 
 interface Users {
   id: string;
   name: string;
   email: string;
+  profileImage: string;
   password: string;
   role: string;
   state: string;
@@ -37,6 +39,37 @@ const users = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [page, setPage] = useState("1");
   const [pageSize, setPageSize] = useState("3");
+
+  const [file, setFile] = useState<any>(null);
+  const [preview, setPreview] = useState("");
+  const [uploading, setUploading] = useState(false);
+
+  const handleFileChange = (e: any) => {
+    const selectedFile = e.target.files[0];
+    setFile(selectedFile);
+    setPreview(URL.createObjectURL(selectedFile));
+  };
+
+  const handleUpload = async () => {
+    const formData = new FormData();
+    formData.append("image", file);
+    formData.append("userId", "d85f078f-53cf-4db1-908b-f14eb724c5a3");
+
+    try {
+      setUploading(true);
+      const res = await axios.post(
+        "http://localhost:5000/api/users/image_upload",
+        formData
+      );
+      alert("Image uploaded: " + res.data.imageUrl);
+      setPreview("");
+      getUsersPaginated();
+    } catch (err) {
+      alert("Upload failed");
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const queryParams = new URLSearchParams();
 
@@ -75,11 +108,19 @@ const users = () => {
         Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque ab
         blanditiis, iure vero eius error culpa.
       </p>
+      <div>
+        <input type="file" onChange={handleFileChange} />
+        {preview && <img src={preview} alt="Preview" width="150" />}
+        <button onClick={handleUpload} disabled={!file || uploading}>
+          {uploading ? "Uploading..." : "Upload"}
+        </button>
+      </div>
       <h5>List</h5>
       <ul>
         {users.map((user) => (
           <li key={user.id}>
             <h6>{user.name}</h6>
+            <img src={user.profileImage} alt={user.name} width="150" />
             <p>{user.gender}</p>
             <p>{user.state}</p>
             <p>{user.role}</p>
